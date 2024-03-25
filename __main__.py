@@ -35,6 +35,8 @@ rec1=pygame.Rect(250,400,platform_length,50)
 recP=pygame.Rect(0,0,person_width,person_height)
 
 while running:
+    screen.fill((0,0,0))
+
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             running=False
@@ -42,6 +44,27 @@ while running:
             running=True
     
     create_txt("Platform weight limit: "+str(platform_limit),text_style,text_color,text_position)
+    
+    
+    pos= pygame.mouse.get_pos()
+    if rec1.collidepoint(pos)&pygame.mouse.get_pressed()[0]: #hold the mouse left-click to expand the platform
+        col=(0,255,0)
+        #platform_length=300
+        rec1.inflate_ip(5, 0)
+        #rec1.update(250,400,platform_length,50)
+        #platform_length=300
+        #rec1=pygame.Rect(250,400,350,50)
+        
+        #pygame.draw.rect(screen,col,rec1)
+    elif rec1.collidepoint(pos)&pygame.mouse.get_pressed()[2]: #hold the mouse right-click to shrink the platform
+        col=(255,0,0)
+        rec1.inflate_ip(-5, 0)    
+    else:
+        col=(0,0,255)
+        #platform_length=400
+        #pygame.draw.rect(screen,col,rec1)
+
+    pygame.draw.rect(screen,col,rec1)
 
     for i in range(0,len(selected_people)):   #placing people on the platform
         if len(selected_people)==1:
@@ -52,22 +75,7 @@ while running:
             pygame.draw.rect(screen,(255,255,0),recP,width=0)
         if len(selected_people)==3:
             recP.center=(250+person_width/2+i*(platform_length-person_width)/2,320+40)
-            pygame.draw.rect(screen,(255,255,0),recP,width=0)
-    
-    
-    pos= pygame.mouse.get_pos()
-    if rec1.collidepoint(pos)&pygame.mouse.get_pressed()[0]:
-        col=(100,255,50)
-        platform_length=300
-        #rec1=pygame.Rect(250,400,350,50)
-        
-        pygame.draw.rect(screen,col,rec1)
-
-    else:
-        col=(255,0,0)
-        #platform_length=400
-        pygame.draw.rect(screen,col,rec1)
-
+            pygame.draw.rect(screen,(255,255,0),recP,width=0)   
         
     pygame.display.update()
     pygame.time.delay(100)
