@@ -26,14 +26,14 @@ def create_txt(text,font,color,coor):
 #platform_length=int(input("enter platform length:"))
 
 platform_max_height=300
-platform_height=platform_max_height*1-(sum(selected_people)/platform_limit)
+platform_height=platform_max_height*(1-((sum(selected_people))/platform_limit))
 platform_length=500
-recPlatform=pygame.Rect(250,700-platform_height,platform_length,platform_height) #creating the platform
+
 
 
 person_height=80
 person_width=30
-recP=pygame.Rect(0,0,person_width,person_height) #creating people
+
 
 recCreate=pygame.Rect(560,100,60,40) #adding people button
 rectb=pygame.Rect(450,100,100,40)
@@ -50,6 +50,7 @@ placed=False
 addedPerson=0
 
 while running:
+    
     screen.fill(0)
 
     for event in pygame.event.get():
@@ -76,19 +77,21 @@ while running:
         sticking=True
 
     if sticking&pygame.mouse.get_pressed()[0]:
-        recNew.center=(pygame.mouse.get_pos()[0],700-platform_height-40)
-        pygame.draw.rect(screen,(255,255,0),recNew)
         drawNew=False
         placed=True
         addedPerson=int(text)
+        platform_height=platform_max_height*(1-((sum(selected_people)+addedPerson)/platform_limit))
+        recNew.center=(pygame.mouse.get_pos()[0],700-platform_height-40)
+        pygame.draw.rect(screen,(255,255,0),recNew)
         text = ""
         
     if placed:
         sticking=False
         pygame.draw.rect(screen,(255,255,0),recNew)
-        
     
+    recPlatform=pygame.Rect(250,700-platform_height,platform_length,platform_height) #creating the platform
 
+    recP=pygame.Rect(0,0,person_width,person_height) #creating people
     pos=pygame.mouse.get_pos()
     if recPlatform.collidepoint(pos)&pygame.mouse.get_pressed()[0]: #hold the mouse left-click to expand the platform
         col=(0,255,0)
@@ -106,6 +109,7 @@ while running:
         col=(0,0,255)
         #platform_length=400
         #pygame.draw.rect(screen,col,recPlatform)
+
 
     pygame.draw.rect(screen,col,recPlatform)
 
@@ -155,12 +159,15 @@ while running:
         if len(selected_people)==3:
             recP.center=(250+person_width/2+i*(platform_length-person_width)/2,700-platform_height-40)
             pygame.draw.rect(screen,(255,255,0),recP,width=0)   
-
+    
+    
+    
     create_txt("Platform Weight Limit: "+str(platform_limit),text_style,text_color,text_position)
     create_txt("Person's Weight: "+str(selected_people)+"+"+str(addedPerson),text_style,text_color,(100,200))
-    create_txt("Current Weight: "+str(sum(selected_people)+addedPerson),text_style,(255,255-255*(sum(selected_people)/platform_limit),255-255*(sum(selected_people)/platform_limit)),(100,250)) #red if max load, whight if no load
+    WeightColor=255-255*((sum(selected_people)+addedPerson)/platform_limit) if (sum(selected_people)+addedPerson)<=1 else 1
+    create_txt("Current Weight: "+str(sum(selected_people)+addedPerson),text_style,(255,WeightColor,WeightColor),(100,250)) #red if max load, whight if no load
     create_txt("Enter a new person's weight: ",text_style,text_color,(100,150))
     
     pygame.display.update()
-    pygame.time.delay(100)
+    pygame.time.delay(50)
 
