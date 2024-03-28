@@ -47,6 +47,7 @@ recNew=pygame.Rect(0,0,person_width,person_height)
 drawNew=False
 sticking=False
 placed=False
+addedPerson=0
 
 while running:
     screen.fill(0)
@@ -79,11 +80,13 @@ while running:
         pygame.draw.rect(screen,(255,255,0),recNew)
         drawNew=False
         placed=True
+        addedPerson=int(text)
+        text = ""
         
     if placed:
         sticking=False
         pygame.draw.rect(screen,(255,255,0),recNew)
-
+        
     
 
     pos=pygame.mouse.get_pos()
@@ -114,12 +117,10 @@ while running:
         except:
             text = ""
         else:
-            selected_people.append(int(text))
-        
+            drawNew=True
         ccol=(0,255,0)
         tbcol=(50,50,50)
-        drawNew=True
-        
+
     elif recCreate.collidepoint(pos)!=True &pygame.mouse.get_pressed()[0]:
         tbcol=(50,50,50)
         input_active = False
@@ -155,9 +156,9 @@ while running:
             recP.center=(250+person_width/2+i*(platform_length-person_width)/2,700-platform_height-40)
             pygame.draw.rect(screen,(255,255,0),recP,width=0)   
 
-        create_txt("Platform Weight Limit: "+str(platform_limit),text_style,text_color,text_position)
-    create_txt("Person's Weight: "+str(selected_people),text_style,text_color,(100,200))
-    create_txt("Current Weight: "+str(sum(selected_people)),text_style,(255,255-255*(sum(selected_people)/platform_limit),255-255*(sum(selected_people)/platform_limit)),(100,250)) #red if max load, whight if no load
+    create_txt("Platform Weight Limit: "+str(platform_limit),text_style,text_color,text_position)
+    create_txt("Person's Weight: "+str(selected_people)+"+"+str(addedPerson),text_style,text_color,(100,200))
+    create_txt("Current Weight: "+str(sum(selected_people)+addedPerson),text_style,(255,255-255*(sum(selected_people)/platform_limit),255-255*(sum(selected_people)/platform_limit)),(100,250)) #red if max load, whight if no load
     create_txt("Enter a new person's weight: ",text_style,text_color,(100,150))
     
     pygame.display.update()
