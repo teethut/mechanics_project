@@ -40,8 +40,13 @@ rectb=pygame.Rect(450,100,100,40)
 
 font = pygame.font.SysFont("Arial",40 ,bold=True)
 text = ""
-input_active = True
-
+input_active = False
+tbcol=(50,50,50)
+enteredNew=False
+recNew=pygame.Rect(0,0,person_width,person_height)
+drawNew=False
+sticking=False
+placed=False
 
 while running:
     screen.fill(0)
@@ -52,19 +57,36 @@ while running:
         elif event.type == pygame.KEYDOWN and input_active:
             if event.key == pygame.K_RETURN:
                 input_active = False
+                tbcol=(50,50,50)
+                text = ""
+                #enteredNew=True
             elif event.key == pygame.K_BACKSPACE:
                 text =  text[:-1]
             else:
                 text += event.unicode
     
+    if enteredNew==True:
+        drawNew=True
+        enteredNew=False
 
-    create_txt("Platform Weight Limit: "+str(platform_limit),text_style,text_color,text_position)
-    create_txt("Person's Weight: "+str(selected_people),text_style,text_color,(100,200))
-    create_txt("Current Weight: "+str(sum(selected_people)),text_style,(255,255-255*(sum(selected_people)/platform_limit),255-255*(sum(selected_people)/platform_limit)),(100,250)) #red if max load, whight if no load
-    create_txt("Enter a new person's weight: ",text_style,text_color,(100,150))
+    if drawNew:
+        recNew.center=pygame.mouse.get_pos()
+        pygame.draw.rect(screen,(255,255,0),recNew)
+        sticking=True
+
+    if sticking&pygame.mouse.get_pressed()[0]:
+        recNew.center=(pygame.mouse.get_pos()[0],700-platform_height-40)
+        pygame.draw.rect(screen,(255,255,0),recNew)
+        drawNew=False
+        placed=True
+        
+    if placed:
+        sticking=False
+        pygame.draw.rect(screen,(255,255,0),recNew)
+
     
 
-    pos= pygame.mouse.get_pos()
+    pos=pygame.mouse.get_pos()
     if recPlatform.collidepoint(pos)&pygame.mouse.get_pressed()[0]: #hold the mouse left-click to expand the platform
         col=(0,255,0)
         #platform_length=300
@@ -85,17 +107,35 @@ while running:
     pygame.draw.rect(screen,col,recPlatform)
 
     ccol=(255,0,0)
+    
     if recCreate.collidepoint(pos)&pygame.mouse.get_pressed()[0]:
-        input_active = True
-        text = ""        
+        try:
+            int(text)
+        except:
+            text = ""
+        else:
+            selected_people.append(int(text))
+        
         ccol=(0,255,0)
-
+        tbcol=(50,50,50)
+        drawNew=True
+        
+    elif recCreate.collidepoint(pos)!=True &pygame.mouse.get_pressed()[0]:
+        tbcol=(50,50,50)
+        input_active = False
     elif recCreate.collidepoint(pos):
+        text = ""
         ccol=(160,0,0)
     else:
         ccol=(255,0,0)    
     
-    pygame.draw.rect(screen,(50,50,50),rectb)
+    if rectb.collidepoint(pos)&pygame.mouse.get_pressed()[0]:
+        input_active = True
+        tbcol=(20,20,20)
+
+    
+
+    pygame.draw.rect(screen,tbcol,rectb)
     text_surf = font.render(text, True, (255, 0, 0))
     #print(text)
     screen.blit(text_surf, (460,95))
@@ -115,7 +155,11 @@ while running:
             recP.center=(250+person_width/2+i*(platform_length-person_width)/2,700-platform_height-40)
             pygame.draw.rect(screen,(255,255,0),recP,width=0)   
 
-   
+        create_txt("Platform Weight Limit: "+str(platform_limit),text_style,text_color,text_position)
+    create_txt("Person's Weight: "+str(selected_people),text_style,text_color,(100,200))
+    create_txt("Current Weight: "+str(sum(selected_people)),text_style,(255,255-255*(sum(selected_people)/platform_limit),255-255*(sum(selected_people)/platform_limit)),(100,250)) #red if max load, whight if no load
+    create_txt("Enter a new person's weight: ",text_style,text_color,(100,150))
+    
     pygame.display.update()
     pygame.time.delay(100)
 
