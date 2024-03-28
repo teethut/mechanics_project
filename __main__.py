@@ -122,6 +122,7 @@ while running:
             text = ""
         else:
             drawNew=True
+            pygame.time.delay(50)
         ccol=(0,255,0)
         tbcol=(50,50,50)
 
